@@ -207,8 +207,8 @@ function vortexRight() {
 }
 
 function vortexAdd() {
-    iSelect = vortices.length;
-    vortices.push([width / 2, height / 2, 0, "vortex"]);
+    vortices.push([vortices[iSelect][0], vortices[iSelect][1], 0, "vortex"]);
+    iSelect = vortices.length - 1;
     updatePanel();
 }
 
