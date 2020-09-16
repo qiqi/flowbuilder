@@ -412,7 +412,6 @@ function drawSide(sideCanvas, velocity) {
     ctx.fillStyle = "#fffff0";
     ctx.fillRect(0, 0, sideWidth, height);
     ctx.strokeStyle = "#b00000";
-    console.log(velocity.length);
     ctx.beginPath();
     for (var i = 0; i < velocity.length; ++i) {
         var yuv = velocity[i];
