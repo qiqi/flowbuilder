@@ -126,7 +126,9 @@ text-align:center
 <body>
 <table>
 <tr>
+<td><canvas id="lCanvas"></canvas></td>
 <td><canvas id="mainCanvas"></canvas></td>
+<td><canvas id="rCanvas"></canvas></td>
 <td>
 <table>
 <tr>
@@ -191,6 +193,17 @@ canvas.height = height;
 var canvas2 = document.createElement('canvas');
 canvas2.width = width;
 canvas2.height = height;
+
+var sideWidth = 50;
+var lCanvas = document.getElementById("lCanvas");
+var rCanvas = document.getElementById("rCanvas");
+var bCanvas = document.createElement('canvas');
+lCanvas.width = sideWidth;
+lCanvas.height = height;
+rCanvas.width = sideWidth;
+rCanvas.height = height;
+bCanvas.width = sideWidth;
+bCanvas.height = height;
 
 function vortexLeft() {
     if (iSelect > 0) {
@@ -328,7 +341,7 @@ function addParticle(xy, delta) {
                     xy[1] + delta * (Math.random() - 0.5)]);
 }
 
-setInterval(function() {
+function computeMain() {
     for (var i = 0; i < particles.length; ++i) {
         advance(particles[i]);
     }
@@ -361,6 +374,9 @@ setInterval(function() {
             }
         }
     }
+}
+
+function drawMain() {
     var ctx = canvas2.getContext("2d");
     ctx.clearRect(0, 0, width, height);
     ctx.fillStyle = "#000000";
@@ -379,7 +395,48 @@ setInterval(function() {
     var ctx1 = canvas.getContext("2d");
     ctx1.clearRect(0, 0, width, height);
     ctx1.drawImage(canvas2, 0, 0);
+}
+
+function computeVelocity(x) {
+    var velocity = [];
+    
+    for (var y = -height * 0.1; y < height * 1.1; y += spacing/2) {
+        velocity.push([y].concat(ddt([x, y])));
+    }
+
+    return velocity;
+}
+
+function drawSide(sideCanvas, velocity) {
+    var ctx = sideCanvas.getContext("2d");
+    ctx.fillStyle = "#fffff0";
+    ctx.fillRect(0, 0, sideWidth, height);
+    ctx.strokeStyle = "#b00000";
+    console.log(velocity.length);
+    ctx.beginPath();
+    for (var i = 0; i < velocity.length; ++i) {
+        var yuv = velocity[i];
+        ctx.moveTo(0, yuv[0]);
+        var scale = 20;
+        ctx.lineTo(yuv[1] * scale, yuv[0] + yuv[2] * scale);
+    }
+    ctx.stroke();
+    //var ctx1 = sideCanvas.getContext("2d");
+    //ctx1.clearRect(0, 0, sideWidth, height);
+    //ctx1.drawImage(bCanvas, 0, 0);
+}
+
+setInterval(function() {
+    computeMain();
+    drawMain();
 }, 10);
+
+setInterval(function() {
+    var lVel = computeVelocity(0);
+    var rVel = computeVelocity(width);
+    drawSide(lCanvas, lVel);
+    drawSide(rCanvas, rVel);
+}, 200);
 </script>
 </body>
 </html>
